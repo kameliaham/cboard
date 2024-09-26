@@ -25,6 +25,10 @@ jest.mock('./SignUp.messages', () => {
       id: 'cboard.components.SignUp.confirmYourPassword',
       defaultMessage: 'Confirm your password'
     },
+    profession: {
+      id: 'cboard.components.SignUp.profession',
+      defaultMessage: 'Add your profession'
+    },
     cancel: {
       id: 'cboard.components.SignUp.cancel',
       defaultMessage: 'Cancel'

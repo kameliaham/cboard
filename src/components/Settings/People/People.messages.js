@@ -21,6 +21,22 @@ export default defineMessages({
     id: 'cboard.components.Settings.People.emailSecondary',
     defaultMessage: 'Update your user email'
   },
+  profession: {
+    id: 'cboard.components.Settings.People.profession',
+    defaultMessage: 'Profession'
+  },
+  professionSecondary: {
+    id: 'cboard.components.Settings.People.professionSecondary',
+    defaultMessage: 'Update Your profession'
+  },
+  matricule: {
+    id: 'cboard.components.Settings.People.matricule',
+    defaultMessage: 'Matricule'
+  },
+  matriculeSecondary: {
+    id: 'cboard.components.Settings.People.matriculeSecondary',
+    defaultMessage: 'update your registration number'
+  },
   language: {
     id: 'cboard.components.Settings.People.language',
     defaultMessage: 'Language'

@@ -16,6 +16,8 @@ import LoadingIcon from '../../UI/LoadingIcon';
 import validationSchema from './validationSchema';
 import { signUp } from './SignUp.actions';
 import messages from './SignUp.messages';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import './SignUp.css';
 
 export class SignUp extends Component {
@@ -33,7 +35,8 @@ export class SignUp extends Component {
 
   state = {
     isSigningUp: false,
-    signUpStatus: {}
+    signUpStatus: {},
+    generatedMatricule: '' // Pour stocker le matricule généré
   };
 
   componentDidUpdate({ isDialogOpen }) {
@@ -42,15 +45,39 @@ export class SignUp extends Component {
     }
   }
 
+  // Générer un matricule unique pour un orthophoniste
+  generateMatricule = () => {
+    const uniqueMatricule = `ORTHO-${Math.floor(Math.random() * 10000)}`;
+    this.setState({ generatedMatricule: uniqueMatricule });
+  };
+
   handleSubmit = values => {
-    const { passwordConfirm, ...formValues } = values;
+    const {
+      passwordConfirm,
+      profession,
+      matricule,
+      generatedMatricule,
+      ...formValues
+    } = values;
+
+    // Si la profession est orthophoniste, on utilise le matricule généré
+    const finalMatricule =
+      profession === 'orthophoniste'
+        ? this.state.generatedMatricule
+        : matricule;
+
+    const formData = {
+      ...formValues,
+      profession,
+      matricule: finalMatricule
+    };
 
     this.setState({
       isSigningUp: true,
       signUpStatus: {}
     });
 
-    signUp(formValues)
+    signUp(formData)
       .then(signUpStatus => this.setState({ signUpStatus }))
       .catch(error => {
         const responseMessage = error?.response?.data?.message;
@@ -97,10 +124,13 @@ export class SignUp extends Component {
               onSubmit={this.handleSubmit}
               validationSchema={validationSchema}
               initialValues={{
-                isTermsAccepted: false
+                isTermsAccepted: false,
+                profession: '',
+                matricule: '',
+                generatedMatricule: ''
               }}
             >
-              {({ errors, handleChange, handleSubmit }) => (
+              {({ errors, values, handleChange, handleSubmit }) => (
                 <form className="SignUp__form" onSubmit={handleSubmit}>
                   <TextField
                     name="name"
@@ -128,6 +158,50 @@ export class SignUp extends Component {
                     error={errors.passwordConfirm}
                     onChange={handleChange}
                   />
+                  <Select
+                    name="profession"
+                    onChange={e => {
+                      handleChange(e);
+                      if (e.target.value === 'orthophoniste') {
+                        this.generateMatricule();
+                      }
+                    }}
+                    value={values.profession}
+                    displayEmpty
+                    error={errors.profession}
+                  >
+                    <MenuItem value="" disabled>
+                      {intl.formatMessage(messages.profession)}
+                    </MenuItem>
+                    <MenuItem value="orthophoniste">Orthophoniste</MenuItem>
+                    <MenuItem value="patient">Patient</MenuItem>
+                  </Select>
+
+                  {/* Demande de matricule pour les patients */}
+                  {values.profession === 'patient' && (
+                    <TextField
+                      name="matricule"
+                      label={intl.formatMessage(messages.enterMatricule)}
+                      error={errors.matricule}
+                      helperText={
+                        errors.matricule ||
+                        'Si vous avez un orthophoniste, entrez son matricule.'
+                      }
+                      onChange={handleChange}
+                    />
+                  )}
+
+                  {/* Matricule généré pour les orthophonistes */}
+                  {values.profession === 'orthophoniste' && (
+                    <TextField
+                      name="generatedMatricule"
+                      label={intl.formatMessage(messages.yourMatricule)}
+                      value={this.state.generatedMatricule}
+                      onChange={handleChange}
+                      helperText="Votre matricule unique."
+                    />
+                  )}
+
                   <FormControlLabel
                     control={
                       <Checkbox

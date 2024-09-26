@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
 import { logout } from '../../Account/Login/Login.actions';
 import { updateUserData } from '../../App/App.actions';
 import People from './People.component';
@@ -12,13 +11,20 @@ import { isAndroid } from '../../../cordova-util';
 
 export class PeopleContainer extends PureComponent {
   static propTypes = {
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
   };
 
   state = {
     name: this.props.user.name,
     email: this.props.user.email,
-    birthdate: this.props.user.birthdate
+    birthdate: this.props.user.birthdate,
+    profession: this.props.user.profession,
+    matricule: this.props.user.matricule || '',
+    orthophonisteInfo: null,
+    patientsWithSameMatricule: [],
+    searchTerm: '',
+    filteredPatients: []
   };
 
   handleChange = name => event => {
@@ -34,16 +40,55 @@ export class PeopleContainer extends PureComponent {
         id: this.props.user.id,
         name: this.state.name,
         email: this.state.email,
-        birthdate: this.state.birthdate
+        birthdate: this.state.birthdate,
+        profession: this.state.profession,
+        matricule: this.state.matricule
       });
+
       this.props.updateUserData({
         ...this.props.user,
         name: this.state.name,
         email: this.state.email,
-        birthdate: this.state.birthdate
+        birthdate: this.state.birthdate,
+        profession: this.state.profession,
+        matricule: this.state.matricule
       });
+
+      // Réinitialiser l'erreur et peut-être donner un feedback de succès
+      this.setState({ error: null });
     } catch (e) {
-    } finally {
+      console.log(
+        'Erreur lors de la soumission:',
+        e.response?.data?.message || e.message
+      );
+      this.setState({ error: e.response?.data?.message || e.message }); // Afficher le message d'erreur
+      console.error(e.message);
+    }
+  };
+
+  fetchData = async () => {
+    try {
+      const { profession, matricule } = this.state;
+      if (profession === 'patient' && matricule) {
+        const responseOrthophoniste = await API.getOrthoMatri(matricule);
+        if (
+          Array.isArray(responseOrthophoniste) &&
+          responseOrthophoniste.length > 0
+        ) {
+          this.setState({ orthophonisteInfo: responseOrthophoniste[0] });
+        } else {
+          this.setState({ orthophonisteInfo: null });
+        }
+      } else if (profession === 'orthophoniste') {
+        const responsePatients = await API.getMypatients(matricule);
+        if (Array.isArray(responsePatients)) {
+          this.setState({ patientsWithSameMatricule: responsePatients });
+        } else {
+          console.warn('Response is not an array:', responsePatients);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
   };
 
@@ -73,8 +118,30 @@ export class PeopleContainer extends PureComponent {
     }
   };
 
+  handleSearchChange = event => {
+    const searchTerm = event.target.value;
+    this.setState({ searchTerm });
+
+    const filteredPatients = this.state.patientsWithSameMatricule.filter(
+      patient =>
+        patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        patient.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    this.setState({ filteredPatients });
+  };
+
   render() {
     const { history, location } = this.props;
+    const {
+      orthophonisteInfo,
+      patientsWithSameMatricule,
+      searchTerm,
+      filteredPatients
+    } = this.state;
+    const displayedPatients = searchTerm
+      ? filteredPatients
+      : patientsWithSameMatricule;
 
     return (
       <People
@@ -84,10 +151,16 @@ export class PeopleContainer extends PureComponent {
         name={this.state.name}
         email={this.state.email}
         birthdate={this.state.birthdate}
+        profession={this.state.profession}
+        matricule={this.state.matricule}
+        orthophonisteInfo={orthophonisteInfo}
+        patientsWithSameMatricule={displayedPatients}
         location={location}
         onChangePeople={this.handleChange}
         onSubmitPeople={this.handleSubmit}
         onDeleteAccount={this.handleDeleteAccount}
+        fetchData={this.fetchData}
+        onSearchChange={this.handleSearchChange}
       />
     );
   }

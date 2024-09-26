@@ -21,6 +21,18 @@ export default defineMessages({
     id: 'cboard.components.SignUp.confirmYourPassword',
     defaultMessage: 'Confirm your password'
   },
+  enterMatricule: {
+    id: 'cboard.components.SignUp.enterMatricule',
+    defaultMessage: 'Entrer la matricule de votre orthophoniste'
+  },
+  yourMatricule: {
+    id: 'cboard.components.SignUp.yourMatricule',
+    defaultMessage: 'Ajout une matricule'
+  },
+  profession: {
+    id: 'cboard.components.SignUp.profession',
+    defaultMessage: 'Profession'
+  },
   cancel: {
     id: 'cboard.components.SignUp.cancel',
     defaultMessage: 'Cancel'

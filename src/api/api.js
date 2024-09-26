@@ -334,6 +334,40 @@ class API {
     return data;
   }
 
+  async getOrthoMatri(matricule) {
+    try {
+      console.log('here get ortho');
+      const response = await this.axiosInstance.get('/getOrthoMatri', {
+        params: { matricule }
+      });
+
+      console.log('result', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching orthophoniste data:', error);
+      throw error;
+    }
+  }
+
+  async getMypatients(matricule) {
+    try {
+      const response = await this.axiosInstance.get('/getMypatients', {
+        params: { matricule },
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          Expires: '0'
+        }
+      });
+
+      console.log('result', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching orthophoniste data:', error);
+      throw error;
+    }
+  }
+
   async createBoard(board) {
     const authToken = getAuthToken();
     if (!(authToken && authToken.length)) {
