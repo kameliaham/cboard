@@ -1,0 +1,157 @@
+.Symbol {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.Tile .Symbol {
+  padding-top: var(--folder-flap-height);
+  padding-bottom: 0.2em;
+}
+
+.SymbolSearch__Suggestion > .Symbol {
+  position: unset;
+}
+
+.LiveSymbolOutput__value > .Symbol {
+  padding: 0.2em 0.9em 0.2em 0.9em;
+}
+
+.liveInput .MuiInputBase-input::-webkit-scrollbar {
+  display: none;
+}
+
+.Symbol textarea {
+  align-self: flex-start;
+  font-weight: 700;
+  max-height: 90%;
+}
+
+.is-dark .liveInput {
+  color: black;
+  background-color: white;
+}
+
+.is-dark .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline,
+.is-dark .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: black;
+}
+
+.is-dark .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #78909c;
+}
+
+.SymbolOutput .scanner__focused {
+  outline: 4px solid rgba(255, 0, 0, 1);
+}
+
+.Symbol__image-container {
+  position: relative;
+  flex: 1;
+  width: 97%;
+  margin: auto;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  overflow: hidden;
+}
+
+.Symbol__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+
+}
+
+.Symbol .Symbol__label {
+  width: 95%;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0 auto;
+  position: relative;
+  text-align: center;
+  display: table-cell;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  overflow: hidden;
+  color: rgb(0, 0, 0);
+}
+
+@media (min-width: 600px) {
+  .Symbol .Symbol__label {
+    font-size: 1rem;
+    margin: 0 auto;
+  }
+}
+
+[dir='rtl'] .Symbol__label {
+  direction: rtl;
+} 
+
+.edit-icon {
+  position: absolute;  /* Positionne l'icône de manière absolue */
+  left: 5px;         /* Espace depuis la gauche */
+  top: 5px;          /* Espace depuis le haut */
+  background-color: white; /* Couleur de fond blanche */
+  border-radius: 50%; /* Rend l'arrière-plan circulaire */
+  color: black;      /* Couleur de l'icône en noir */
+  padding: 5px;     /* Espace autour de l'icône */
+  cursor: pointer;  /* Change le curseur au survol */
+  transition: background-color 0.3s; /* Transition douce pour le survol */
+}
+
+.edit-icon:hover {
+  background-color: rgba(240, 240, 240, 0.8); /* Change légèrement la couleur au survol */
+}
+
+.modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Largeur de la modale */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+
+
+
+
