@@ -3886,5 +3886,7 @@
   "symbol.descriptiveQuantity.slow": "slow",
   "symbol.descriptiveQuantity.different": "different",
   "symbol.buildingContents.bathroom": "bathroom",
-  "symbol.descriptiveQuantity.categories": "categories"
+  "symbol.descriptiveQuantity.categories": "categories",
+  "cboard.components.TypingPage.alphabet": "A B C D E F G H I J % K L M N O P Q R S T % U V W X Y Z",
+  "cboard.components.TypingPage.textDirection": "ltr"
 }

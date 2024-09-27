@@ -3886,5 +3886,7 @@
   "symbol.descriptiveQuantity.slow": "بطيء",
   "symbol.descriptiveQuantity.different": "مختلف",
   "symbol.buildingContents.bathroom": "حمام",
-  "symbol.descriptiveQuantity.categories": "الفئات"
+  "symbol.descriptiveQuantity.categories": "الفئات",
+  "cboard.components.TypingPage.alphabet" : "ا ب ت ث ج ح خ د ذ ر ز % س ش ص ض ط ظ ع غ ف % ق ك ل م ن ه و ي",
+  "cboard.components.TypingPage.textDirection": "rtl"
 }
