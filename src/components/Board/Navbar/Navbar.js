@@ -16,6 +16,7 @@ import BackButton from '../../UI/BackButton';
 import AnalyticsButton from '../../UI/AnalyticsButton';
 import HelpButton from '../../UI/HelpButton';
 import SettingsButton from '../../UI/SettingsButton';
+import KeyboardButton from '../../UI/Keyboard/Keyboard';
 import messages from '../Board.messages';
 import { isCordova, isAndroid, isIOS } from '../../../cordova-util';
 import './Navbar.css';
@@ -176,6 +177,9 @@ export class Navbar extends React.Component {
               />
             </React.Fragment>
           )}
+          <div className={'virtual__keyboard'}>
+            <KeyboardButton component={Link} to="/typingpage" />
+          </div>
           <div className={'personal__account'}>
             <UserIcon onClick={this.onUserIconClick} />
           </div>

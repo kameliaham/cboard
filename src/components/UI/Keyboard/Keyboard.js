@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { injectIntl, intlShape } from 'react-intl';
 import Keyboard from '@material-ui/icons/Keyboard';
 
-import IconButton from '../IconButton';
+import IconButton from '../../UI/IconButton';
 import messages from '../../Settings/Settings.messages';
 
 const propTypes = {

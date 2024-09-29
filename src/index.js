@@ -65,7 +65,8 @@ const renderApp = () => {
         </PayPalScriptProvider>
       </PersistGate>
     </Provider>,
-    document.getElementById('root')
+    document.getElementById('root'),
+
   );
 };
 

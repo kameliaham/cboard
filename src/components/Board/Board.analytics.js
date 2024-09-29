@@ -1,6 +1,4 @@
-import { trackEvent } from '@redux-beacon/google-analytics-gtag';
 import { isCordova, cvaTrackEvent } from '../../cordova-util';
-
 import {
   IMPORT_BOARDS,
   CREATE_BOARD,
@@ -11,126 +9,109 @@ import {
   CLICK_SYMBOL,
   CLICK_OUTPUT
 } from './Board.constants';
+import { getStore } from '../../store';
 
-const getTiles = (boards, boardId, tilesId) => {
-  const board = boards.find(board => board.id === boardId);
-
-  const tiles = board.tiles
-    .filter(tile => tilesId.includes(tile.id))
-    .reduce((acc, tile) => (acc ? `${acc}, ${tile.label}` : tile.label), '');
-  return tiles;
+const getUserId = () => {
+  return getStore().getState().app.userData.id;
 };
 
-const importBoards = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
-    category: 'Backup',
-    action: 'Import Boards'
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action);
-  }
-  return gaEvent;
-});
+// Utility function to get tiles labels
+const getTiles = (boards, boardId, tilesId) => {
+  const board = boards.find(board => board.id === boardId);
+  if (!board) return '';
 
-const changeBoard = trackEvent((action, prevState, nextState) => {
-  const board = nextState.board.boards.find(
-    board => board.id === action.boardId
-  );
-  let boardName = 'root';
-  if (typeof board !== 'undefined') {
-    boardName = board.nameKey || board.name || board.id;
+  return board.tiles
+    .filter(tile => tilesId.includes(tile.id))
+    .reduce((acc, tile) => (acc ? `${acc}, ${tile.label}` : tile.label), '');
+};
+
+
+const sendGtagEvent = (eventName, eventParams) => {
+  window.gtag('event', eventName, eventParams);
+  if (isCordova()) {
+    cvaTrackEvent(eventParams.category, eventParams.action, eventParams.label, eventParams.event_s);
   }
-  const gaEvent = {
+};
+
+
+const importBoards = (action, prevState, nextState) => {
+  sendGtagEvent('import_boards', {
+    category: 'Backup',
+    action: 'Import Boards',
+    event_s: getUserId()
+  });
+};
+
+const changeBoard = (action, prevState, nextState) => {
+  const board = nextState.board.boards.find(board => board.id === action.boardId);
+  const boardName = board ? board.nameKey || board.name || board.id : 'root';
+
+  sendGtagEvent('Change Board', {
     category: 'Navigation',
     action: 'Change Board',
-    label: boardName
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: boardName,
+    event_s: getUserId()
+  });
+};
 
-const createBoard = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
+const createBoard = (action, prevState, nextState) => {
+  sendGtagEvent('Create Board', {
     category: 'Editing',
     action: 'Create Board',
-    label: action.boardName
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: action.boardName,
+    event_s: getUserId()
+  });
+};
 
-const createTile = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
+const createTile = (action, prevState, nextState) => {
+  sendGtagEvent('Create Tile', {
     category: 'Editing',
     action: 'Create Tile',
-    label: action.tile.label
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: action.tile.label,
+    event_s: getUserId()
+  });
+};
 
-const deleteTiles = trackEvent((action, prevState, nextState) => {
-  const deletedTiles = getTiles(
-    prevState.board.boards,
-    action.boardId,
-    action.tiles
-  );
-  const gaEvent = {
+const deleteTiles = (action, prevState, nextState) => {
+  const deletedTiles = getTiles(prevState.board.boards, action.boardId, action.tiles);
+
+  sendGtagEvent('Delete Tiles', {
     category: 'Editing',
     action: 'Delete Tiles',
-    label: deletedTiles
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: deletedTiles,
+    event_s: getUserId()
+  });
+};
 
-const editTiles = trackEvent((action, prevState, nextState) => {
-  const editedTiles = action.tiles.reduce(
-    (acc, tile) => (acc ? `${acc}, ${tile.label}` : tile.label),
-    ''
-  );
-  const gaEvent = {
+const editTiles = (action, prevState, nextState) => {
+  const editedTiles = action.tiles.reduce((acc, tile) => (acc ? `${acc}, ${tile.label}` : tile.label), '');
+
+  sendGtagEvent('Edit Tiles', {
     category: 'Editing',
     action: 'Edit Tiles',
-    label: editedTiles
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: editedTiles,
+    event_s: getUserId()
+  });
+};
 
-const clickSymbol = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
+const clickSymbol = (action, prevState, nextState) => {
+  sendGtagEvent('Click Symbol', {
     category: 'Navigation',
     action: 'Click Symbol',
-    label: action.symbolLabel
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: action.symbolLabel,
+    event_s: getUserId()
+  });
+};
 
-const clickOutput = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
+const clickOutput = (action, prevState, nextState) => {
+  sendGtagEvent('Click Output', {
     category: 'Speech',
     action: 'Click Output',
-    label: action.outputPhrase
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: action.outputPhrase,
+    event_s: getUserId()
+  });
+};
+
 
 const eventsMap = {
   [IMPORT_BOARDS]: importBoards,

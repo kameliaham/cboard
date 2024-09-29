@@ -7,6 +7,7 @@ import './Barchart.css';
 import { Typography } from '@material-ui/core';
 
 const Barchart = ({ data, title }) => {
+  console.log('data:', data)
   let max = 0;
   if (data && data[0]) {
     max = data[0].total;

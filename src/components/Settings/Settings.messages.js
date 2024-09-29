@@ -218,5 +218,9 @@ export default defineMessages({
   symbols: {
     id: 'cboard.components.Settings.symbols',
     defaultMessage: 'Symbols'
-  }
+  },
+  keyboard: {
+    id: 'cboard.components.Settings.keyboard',
+    defaultMessage: 'TypingPage'
+  },
 });

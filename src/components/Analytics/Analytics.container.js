@@ -12,6 +12,8 @@ import API from '../../api';
 import messages from './Analytics.messages';
 import { isCordova } from '../../cordova-util';
 import PremiumFeature from '../PremiumFeature';
+import { getStore } from '../../store';
+
 
 export class AnalyticsContainer extends Component {
   static propTypes = {
@@ -34,20 +36,7 @@ export class AnalyticsContainer extends Component {
         min: 0,
         data: Array.from(Array(30), () => 0)
       },
-      totals: {
-        words: {
-          title: props.intl.formatMessage(messages.totalWords)
-        },
-        phrases: {
-          title: props.intl.formatMessage(messages.totalPhrases)
-        },
-        boards: {
-          title: props.intl.formatMessage(messages.boardsUsed)
-        },
-        editions: {
-          title: props.intl.formatMessage(messages.tilesEdited)
-        }
-      },
+
       categoryTotals: {
         navigation: {
           value: 0,
@@ -71,15 +60,16 @@ export class AnalyticsContainer extends Component {
 
   async componentDidMount() {
     const { intl, showNotification } = this.props;
+    console.log('boards:', this.props.boards)
     this.setState({ isFetching: true });
     try {
-      this.clientId = await this.getGaClientId();
-      const totals = await this.getTotals(this.state.days);
+      this.clientId = getStore().getState().app.userData.id;
+      //const totals = await this.getTotals(this.state.days);
       const usage = await this.getUsage(this.state.days);
       const categoryTotals = await this.getCategoryTotals(this.state.days);
-      const topUsed = this.getTopUsed(totals);
+      const topUsed = await this.getTopUsed(this.state.days);
       this.setState({
-        totals,
+
         categoryTotals,
         usage,
         topUsed,
@@ -106,7 +96,7 @@ export class AnalyticsContainer extends Component {
           []
         );
       const sources = ['arasaac', 'mulberry', 'cboard', 'globalsymbols'];
-      const summary = images.reduce(function(all, image) {
+      const summary = images.reduce(function (all, image) {
         sources.forEach(source => {
           try {
             if (image.match(source)) {
@@ -153,7 +143,7 @@ export class AnalyticsContainer extends Component {
         if (isCordova()) {
           resolve(this.getGaClientIdFromCookie());
         } else if (typeof window.gtag !== 'undefined') {
-          window.gtag('get', 'UA-108091601-1', 'client_id', client_id => {
+          window.gtag('get', 'G-B8WLK499TN', 'client_id', client_id => {
             resolve(client_id);
           });
         } else {
@@ -169,11 +159,13 @@ export class AnalyticsContainer extends Component {
     const request = {
       mobileView: isCordova(),
       clientId: this.clientId,
-      startDate: `${days}daysago`,
+      startDate: `${days}daysAgo`,
       endDate: 'today',
-      metric: 'avgSessionDuration',
+      metric: 'averageSessionDuration',
       dimension: 'nthDay'
     };
+
+
     let template = Array.from(Array(days), () => 0);
     let usage = {
       max: 10,
@@ -182,30 +174,29 @@ export class AnalyticsContainer extends Component {
     };
     try {
       const report = await API.analyticsReport([request]);
+      console.log('kkkk', report)
       if (
         report &&
         report.reports &&
         report.reports.length >= 1 &&
-        report.reports[0].data['rows']
+        report.reports[0]['rows']
       ) {
-        const data = report.reports[0].data.rows.map(row => {
+        const data = report.reports[0].rows.map(row => {
           return {
-            index: parseInt(row.dimensions[1]),
-            value: parseInt(row.metrics[0].values[0]) / 60
+            index: parseInt(row.dimensionValues[0].value),
+            value: parseInt(row.metricValues[0].value) / 60
           };
         });
         data.forEach(value => {
           template[value.index] = value.value;
         });
         usage = {
-          max: Math.ceil(
-            parseInt(report.reports[0].data.maximums[0].values[0]) / 60
-          ),
+          max: Math.ceil(Math.max(...data.map(item => item.value))),
           min: 0,
           data: template
         };
       }
-    } catch (err) {}
+    } catch (err) { console.log('hhh', err) }
     return usage;
   }
 
@@ -213,32 +204,32 @@ export class AnalyticsContainer extends Component {
     const baseData = {
       mobileView: isCordova(),
       clientId: this.clientId,
-      startDate: `${days}daysago`,
+      startDate: `${days}daysAgo`,
       endDate: 'today',
-      metric: 'totalEvents',
-      dimension: 'eventLabel',
+      metric: 'eventCount',
+      dimension: 'eventName',
       filter: ''
     };
     const fullRequest = [];
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventAction', value: 'Click Symbol' }
+      filter: { name: 'eventName', value: 'Click Symbol' }
     });
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventAction', value: 'Click Output' }
+      filter: { name: 'eventName', value: 'Click Output' }
     });
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventAction', value: 'Create Tile' }
+      filter: { name: 'eventName', value: 'Create Tile' }
     });
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventAction', value: 'Edit Tiles' }
+      filter: { name: 'eventName', value: 'Edit Tiles' }
     });
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventAction', value: 'Change Board' }
+      filter: { name: 'eventName', value: 'Change Board' }
     });
     const report = await API.analyticsReport(fullRequest);
 
@@ -277,12 +268,13 @@ export class AnalyticsContainer extends Component {
       report &&
       report.reports &&
       report.reports.length >= index &&
-      report.reports[index].data['rows']
+      report.reports[index]['rows']
     ) {
       if (type === 'rowCount') {
-        total = report.reports[index].data['rowCount'];
+        total = report.reports[index]['rowCount'];
       } else {
-        total = report.reports[index].data['totals'][0]['values'][0];
+
+        total = report?.reports[index].rows[0]?.metricValues[0].value || 0
       }
     }
     return total;
@@ -294,12 +286,12 @@ export class AnalyticsContainer extends Component {
       report &&
       report.reports &&
       report.reports.length >= index &&
-      report.reports[index].data['rows']
+      report.reports[index]['rows']
     ) {
-      rows = report.reports[index].data['rows'].slice(0, max).map(row => {
+      rows = report.reports[index]['rows'].slice(0, max).map(row => {
         return {
-          name: row['dimensions'][1],
-          total: row['metrics'][0]['values'][0],
+          name: row['dimensionValues'][0]['value'],
+          total: row['metricValues'][0]['value'],
           type: type
         };
       });
@@ -311,24 +303,24 @@ export class AnalyticsContainer extends Component {
     const baseData = {
       mobileView: isCordova(),
       clientId: this.clientId,
-      startDate: `${days}daysago`,
+      startDate: `${days}daysAgo`,
       endDate: 'today',
-      metric: 'totalEvents',
-      dimension: 'eventCategory',
+      metric: 'eventCount',
+      dimension: 'customEvent:category',
       filter: ''
     };
     const fullRequest = [];
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventCategory', value: 'Navigation' }
+      filter: { name: 'customEvent:category', value: 'Navigation' }
     });
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventCategory', value: 'Speech' }
+      filter: { name: 'customEvent:category', value: 'Speech' }
     });
     fullRequest.push({
       ...baseData,
-      filter: { name: 'eventCategory', value: 'Editing' }
+      filter: { name: 'customEvent:category', value: 'Editing' }
     });
 
     const report = await API.analyticsReport(fullRequest);
@@ -349,11 +341,102 @@ export class AnalyticsContainer extends Component {
     return totals;
   }
 
-  getTopUsed(totals) {
-    return {
-      symbols: totals['words']['rows'] || [],
-      boards: totals['boards']['rows'] || []
+  async getTopUsed(days) {
+    const SymbolsbaseData = {
+      mobileView: isCordova(),
+      clientId: this.clientId,
+      startDate: `${days}daysAgo`,
+      endDate: 'today',
+      metric: 'eventCount',
+      dimension: 'customEvent:label',
+      filter: ''
+
     };
+    const SymbolsfullRequest = [];
+    SymbolsfullRequest.push({
+      ...SymbolsbaseData,
+      filter: { name: 'eventName', value: 'Click Symbol' }
+
+    });
+
+
+    const SymbolsReport = await API.analyticsReport(SymbolsfullRequest);
+    const symbols = SymbolsReport.reports[0].rows
+      .filter(row => row.dimensionValues[0].value !== "(not set)")
+      .map(row => {
+        return {
+          name: row.dimensionValues[0].value,
+          total: parseInt(row.metricValues[0].value, 10)
+        };
+      });
+
+    const BoardsbaseData = {
+      mobileView: isCordova(),
+      clientId: this.clientId,
+      startDate: `${days}daysAgo`,
+      endDate: 'today',
+      metric: 'eventCount',
+      dimension: 'pagePath',
+      filter: ''
+
+    };
+    const BoardsfullRequest = [];
+    BoardsfullRequest.push({
+      ...BoardsbaseData
+
+    });
+
+
+    const BoardsReport = await API.analyticsReport(BoardsfullRequest);
+    const idboards = BoardsReport.reports[0].rows
+      .filter(row => row.dimensionValues[0].value.startsWith('/board/'))
+      .map(row => {
+        const name = row.dimensionValues[0].value?.split('/board/')[1];
+        const total = parseInt(row.metricValues[0].value);
+
+
+
+        return {
+          name,
+          total
+        };
+      });
+
+
+    const boards = await this.getBoardsFromIds(this.props.boards, idboards)
+    console.log('idboards:', idboards)
+    console.log('boards: ', boards)
+
+
+
+
+    return {
+      boards,
+      symbols
+    };
+  }
+
+  async getBoardsFromIds(ExistingBoards, boards) {
+    const NewArr = []
+    boards
+      .map(item => {
+
+        const matchingBoard = ExistingBoards.find(board => board.id === item.name && board.id !== getStore().getState().app.userData.id);
+
+
+        if (matchingBoard) {
+          NewArr.push({
+            name: matchingBoard.nameKey?.split('.').pop() || matchingBoard.name?.split('.').pop(),
+            total: item.total
+          });
+        }
+
+
+        ;
+      })
+    return NewArr
+
+
   }
 
   getTileFromLabel(label) {
@@ -367,14 +450,14 @@ export class AnalyticsContainer extends Component {
           (tile.labelKey &&
             tile.labelKey
               .split()
-              [tile.labelKey.split().length - 1].trim()
+            [tile.labelKey.split().length - 1].trim()
               .toLowerCase() ===
-              label
-                .trim()
-                .replace(' ', '')
-                .toLowerCase())
+            label
+              .trim()
+              .replace(' ', '')
+              .toLowerCase())
         ) {
-          return tile;
+          return boards[i].nameKey;
         }
       }
     }
@@ -385,13 +468,13 @@ export class AnalyticsContainer extends Component {
     const { intl, showNotification } = this.props;
     this.setState({ isFetching: true });
     try {
-      const totals = await this.getTotals(days);
+      //const totals = await this.getTotals(days);
       const usage = await this.getUsage(days);
       const categoryTotals = await this.getCategoryTotals(days);
-      const topUsed = this.getTopUsed(totals);
+      const topUsed = this.getTopUsed(days);
       this.setState({
         days,
-        totals,
+
         categoryTotals,
         usage,
         topUsed,
@@ -406,19 +489,19 @@ export class AnalyticsContainer extends Component {
 
   render() {
     return (
-      <PremiumFeature>
-        <AnalyticsComponent
-          onDaysChange={this.onDaysChange}
-          symbolSources={this.getSymbolSources()}
-          days={this.state.days}
-          totals={this.state.totals}
-          categoryTotals={this.state.categoryTotals}
-          usage={this.state.usage}
-          topUsed={this.state.topUsed}
-          isFetching={this.state.isFetching}
-          {...this.props}
-        />
-      </PremiumFeature>
+
+      <AnalyticsComponent
+        onDaysChange={this.onDaysChange}
+        symbolSources={this.getSymbolSources()}
+        days={this.state.days}
+        totals={this.state.totals}
+        categoryTotals={this.state.categoryTotals}
+        usage={this.state.usage}
+        topUsed={this.state.topUsed}
+        isFetching={this.state.isFetching}
+        {...this.props}
+      />
+
     );
   }
 }

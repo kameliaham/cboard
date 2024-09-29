@@ -229,7 +229,7 @@ export class BoardContainer extends Component {
     // Loggedin user?
     if ('name' in userData && 'email' in userData && window.navigator.onLine) {
       //synchronize user id in analytics
-      window.gtag('set', { user_id: userData.id });
+      window.gtag('set', { event_s: userData.id });
       //synchronize communicator and boards with API
       this.setState({ isGettingApiObjects: true });
       getApiObjects().then(() => this.setState({ isGettingApiObjects: false }));
@@ -467,7 +467,7 @@ export class BoardContainer extends Component {
     let dataURL = null;
     try {
       dataURL = await domtoimage.toPng(node);
-    } catch (e) {}
+    } catch (e) { }
 
     return dataURL;
   }
@@ -795,7 +795,7 @@ export class BoardContainer extends Component {
 
     if (navigationSettings.bigScrollButtonsActive) {
       const cols =
-        currentLayout.reduce(function(valorAnterior, item) {
+        currentLayout.reduce(function (valorAnterior, item) {
           if (item.x > valorAnterior) return item.x;
           return valorAnterior;
         }, 0) + 1;
@@ -1083,17 +1083,17 @@ export class BoardContainer extends Component {
       let parentBoardData = processedBoard
         ? processedBoard
         : {
-            ...board,
-            name:
-              board.name ||
-              this.nameFromKey(board) ||
-              intl.formatMessage(messages.myBoardTitle),
-            tiles: uTiles,
-            author: userData.name,
-            email: userData.email,
-            hidden: false,
-            locale: lang
-          };
+          ...board,
+          name:
+            board.name ||
+            this.nameFromKey(board) ||
+            intl.formatMessage(messages.myBoardTitle),
+          tiles: uTiles,
+          author: userData.name,
+          email: userData.email,
+          hidden: false,
+          locale: lang
+        };
       //check if user has an own communicator
       if (communicator.email !== userData.email) {
         verifyAndUpsertCommunicator(communicator);
@@ -1529,12 +1529,12 @@ export class BoardContainer extends Component {
   selectedTiles = () => {
     return this.state.selectedTileIds
       ? this.state.selectedTileIds.map(selectedTileId => {
-          const tiles = this.props.board.tiles.filter(tile => {
-            return tile.id === selectedTileId;
-          })[0];
+        const tiles = this.props.board.tiles.filter(tile => {
+          return tile.id === selectedTileId;
+        })[0];
 
-          return tiles;
-        })
+        return tiles;
+      })
       : [];
   };
 
@@ -1560,12 +1560,12 @@ export class BoardContainer extends Component {
     const disableBackButton = navHistory.length === 1;
     const editingTiles = this.state.tileEditorOpen
       ? this.state.selectedTileIds.map(selectedTileId => {
-          const tiles = board.tiles.filter(tile => {
-            return tile.id === selectedTileId;
-          })[0];
+        const tiles = board.tiles.filter(tile => {
+          return tile.id === selectedTileId;
+        })[0];
 
-          return tiles;
-        })
+        return tiles;
+      })
       : [];
 
     return (

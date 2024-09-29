@@ -1,5 +1,4 @@
-import { trackEvent } from '@redux-beacon/google-analytics-gtag';
-
+import { isCordova, cvaTrackEvent } from '../../cordova-util';
 import {
   CHANGE_VOICE,
   CHANGE_PITCH,
@@ -7,55 +6,57 @@ import {
   START_SPEECH,
   EMPTY_VOICES
 } from './SpeechProvider.constants';
-import { isCordova, cvaTrackEvent } from '../../cordova-util';
+import { getStore } from '../../store';
 
-const changeVoice = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
-    category: 'Speech',
-    action: 'Changed Voice',
-    label: action ? action.voiceURI : EMPTY_VOICES
-  };
+const getUserId = () => {
+  return getStore().getState().app.userData.id;
+};
+
+
+const sendGtagEvent = (eventName, eventParams) => {
+  window.gtag('event', eventName, eventParams);
   if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
+    cvaTrackEvent(eventParams.category, eventParams.action, eventParams.label);
   }
-  return gaEvent;
-});
+};
 
-const changePitch = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
+
+const changeVoice = (action, prevState, nextState) => {
+  sendGtagEvent('Change Voice', {
+    category: 'Speech',
+    action: 'Change Voice',
+    label: action ? action.voiceURI : EMPTY_VOICES,
+    event_s: getUserId()
+  });
+};
+
+const changePitch = (action, prevState, nextState) => {
+  sendGtagEvent('Changed Pitch', {
     category: 'Speech',
     action: 'Changed Pitch',
-    label: action.pitch
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: action.pitch,
+    event_s: getUserId()
+  });
+};
 
-const changeRate = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
+const changeRate = (action, prevState, nextState) => {
+  sendGtagEvent('Changed Rate', {
     category: 'Speech',
     action: 'Changed Rate',
-    label: action.rate
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: action.rate,
+    event_s: getUserId()
+  });
+};
 
-const startSpeech = trackEvent((action, prevState, nextState) => {
-  const gaEvent = {
+const startSpeech = (action, prevState, nextState) => {
+  sendGtagEvent('Start Speech', {
     category: 'Speech',
     action: 'Start Speech',
-    label: action.text
-  };
-  if (isCordova()) {
-    cvaTrackEvent(gaEvent.category, gaEvent.action, gaEvent.label);
-  }
-  return gaEvent;
-});
+    label: action.text,
+    event_s: getUserId()
+  });
+};
+
 
 const eventsMap = {
   [CHANGE_VOICE]: changeVoice,

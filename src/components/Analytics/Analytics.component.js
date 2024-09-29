@@ -26,6 +26,7 @@ import './Analytics.css';
 import Barchart from '../UI/Barchart';
 import StyledTable from '../UI/StyledTable';
 
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -40,7 +41,6 @@ const propTypes = {
   logout: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
   symbolSources: PropTypes.array.isRequired,
-  totals: PropTypes.object.isRequired,
   categoryTotals: PropTypes.object.isRequired,
   usage: PropTypes.object.isRequired,
   topUsed: PropTypes.object.isRequired
@@ -126,7 +126,6 @@ export class Analytics extends PureComponent {
       symbolSources,
       topUsed,
       days,
-      totals,
       categoryTotals,
       isFetching
     } = this.props;
@@ -193,7 +192,7 @@ export class Analytics extends PureComponent {
           <div className="Analytics__Metrics">
             <Grid container spacing={3}>
               <Grid item lg={8} md={8} sm={12} xs={12}>
-                <StatCards onDetailsClick={this.handleDetailsDialogOpen.bind(this)} data={totals} />
+
                 <TableCard
                   data={topUsed.symbols}
                   tableHead={tablesHead}

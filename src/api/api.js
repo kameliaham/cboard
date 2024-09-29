@@ -15,6 +15,7 @@ import { logout } from '../components/Account/Login/Login.actions.js';
 import { isAndroid } from '../cordova-util';
 
 const BASE_URL = API_URL;
+console.log(API_URL)
 const LOCAL_COMMUNICATOR_ID = 'cboard_default';
 export let improvePhraseAbortController;
 
@@ -62,10 +63,10 @@ class API {
           if (isAndroid()) {
             window.FirebasePlugin.unregister();
             window.facebookConnectPlugin.logout(
-              function(msg) {
+              function (msg) {
                 console.log('disconnect facebook msg' + msg);
               },
-              function(msg) {
+              function (msg) {
                 console.log('error facebook disconnect msg' + msg);
               }
             );
@@ -73,6 +74,7 @@ class API {
           getStore().dispatch(logout());
           history.push('/login-signup/');
         }
+        console.log(API_URL)
         return Promise.reject(error);
       }
     );
@@ -413,7 +415,7 @@ class API {
     let url = null;
     try {
       url = await this.uploadFile(file, filename);
-    } catch (e) {}
+    } catch (e) { }
 
     return url;
   }

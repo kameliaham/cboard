@@ -15,10 +15,13 @@ import NotFound from '../NotFound';
 import Settings from '../Settings';
 import WelcomeScreen from '../WelcomeScreen';
 import Analytics from '../Analytics';
+import TypingPage from '../TypingPage';
 import './App.css';
 import LoginRequiredModal from '../LoggedInFeature/LoginRequiredModal';
 
+
 export class App extends Component {
+
   static propTypes = {
     /**
      * App language direction
@@ -76,6 +79,7 @@ export class App extends Component {
           <Route path="/reset/:userid/:url" component={ChangePassword} />
           <Route path="/login/:type/callback" component={OAuthLogin} />
           <Route path="/board/:id" component={BoardContainer} />
+          <Route path="/typingpage" component={TypingPage} />
           {isDownloadingLang && (
             <Route exact path={'/'}>
               <Redirect to={'/settings/language'} />

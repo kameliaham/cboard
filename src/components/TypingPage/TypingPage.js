@@ -8,9 +8,9 @@ import BackspaceIcon from "@material-ui/icons/Backspace";
 import SpaceBarIcon from "@material-ui/icons/SpaceBar";
 import LanguageIcon from "@material-ui/icons/Language";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
-import Navbar from '../Board/Navbar';
+import Navbar from '../Board/Navbar/Navbar';
 import  tts  from '../../providers/SpeechProvider/tts';
-import { getStore } from '../../store'; // Ensure this is the correct path
+import { getStore } from '../../store';
 import { injectIntl } from 'react-intl';
 import messages from './TypingPage.messages';
 
