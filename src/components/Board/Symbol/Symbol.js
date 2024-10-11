@@ -27,7 +27,6 @@ function Symbol(props) {
   const [width, setWidth] = useState(); 
   const [height, setHeight] = useState(); 
   const [showImage, setShowImage] = useState(true); 
-  
   useEffect(() => {
     async function getSrc() {
       let image = null;
@@ -60,7 +59,7 @@ function Symbol(props) {
   };
 
   const handleEditClick = (event) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
     setIsEditing(true);
     setShowImage(false); 
   };
@@ -85,7 +84,11 @@ function Symbol(props) {
     setIsEditing(false);
     setShowImage(true); 
   };
-
+  const handleReturn = (event) => {
+    setIsEditing(false);
+    setShowImage(true);
+    event.stopPropagation();
+  }
   const handleWidthChange = (e) => { 
     setWidth(e.target.value);
   };
@@ -130,13 +133,12 @@ function Symbol(props) {
           className={'liveInput'}
         />
       )}
-      {type !== 'live' && labelpos === 'Above' && labelpos !== 'Hidden' && (
+      {isEditing && type !== 'live' && labelpos === 'Above' && labelpos !== 'Hidden' && (
         <Typography className="Symbol__label">{label}</Typography>
       )}
       {showImage && src && ( 
         <div className="Symbol__image-container">
-          <img 
-            className="Symbol__image" 
+          <img  
             src={src} 
             alt="" 
             style={{ width: `${width}px`, height: `${height}px`,maxHeight:'100%',position:'relative', maxWidth:'100%', objectFit: 'contain'}} // Apply dimensions
@@ -147,8 +149,8 @@ function Symbol(props) {
         </div>
       )}
       {isEditing && (
-        <div className="edit-form" style={{ textAlign: 'left' ,}}> 
-          <label style={{ marginLeft: '10px' }}>
+        <div className='edit-form' onClick={handleReturn}> 
+          <label>
           <strong>Width:</strong>
           <input  
                 type="number" 
@@ -156,38 +158,39 @@ function Symbol(props) {
                 onClick={handleInputClick} 
                 onChange={handleWidthChange} 
                style={{
-                      marginLeft: '10px', padding: '5px', border: '1px solid #ccc', borderRadius: '5px', width: '100px', 
-    fontSize: '12px',  
-  }} 
-/>
+                      marginLeft: '10%', padding: '5px', border: '1px solid #ccc', borderRadius: '5px', width: '50%',height: '90%',
+                      fontSize: '80%',
+                     }} 
+            />
           </label>
-          <br />
-          <label style={{ marginLeft: '10px' ,top:'5px' }}>
-            <strong> Height:</strong>
+          <br/>
+          <label>
+            <strong>Height:</strong>
             <input 
               type="number" 
               value={height} 
               onChange={handleHeightChange} 
               onClick={handleInputClick} 
               style={{
-                marginLeft: '10px', padding: '5px', border: '1px solid #ccc', borderRadius: '5px', width: '100px', 
-fontSize: '12px', }} 
+                marginLeft: '8%', padding: '5px', border: '1px solid #ccc', borderRadius: '5px', width: '50%', height: '90%',
+                fontSize: '80%',}} 
             />
           </label>
           <br />
-          <div style={{ textAlign: 'center', marginTop: '15px' }}>
+          <div style={{ textAlign: 'center',}}>
           <button onClick={handleSaveChanges} style={{backgroundColor: '#007BFF', color: '#FFFFFF',border: 'none',
-    borderRadius: '5px',padding: '5px 5px',fontSize: '12px',cursor: 'pointer',outline: 'none',
-  }}
->
-            Sauvegarder
+          borderRadius: '5px',padding: '5px 5px',fontSize: '12px',cursor: 'pointer',outline: 'none',
+                       }}
+          >
+            Save
           </button>
           </div>
         </div>
       )}
-      {type !== 'live' && labelpos === 'Below' && labelpos !== 'Hidden' && (
+     {!isEditing && type !== 'live' && labelpos === 'Below' && labelpos !== 'Hidden' && (
         <Typography className="Symbol__label">{label}</Typography>
       )}
+    
     </div>
   );
 }

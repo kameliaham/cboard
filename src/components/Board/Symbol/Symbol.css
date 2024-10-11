@@ -58,7 +58,7 @@
   width: 97%;
   margin: auto;
   display: flex;
-  justify-content: center; /* Center horizontally */
+  justify-content: center; 
   align-items: center;
   overflow: hidden;
 }
@@ -102,19 +102,19 @@
 } 
 
 .edit-icon {
-  position: absolute;  /* Positionne l'icône de manière absolue */
-  left: 5px;         /* Espace depuis la gauche */
-  top: 5px;          /* Espace depuis le haut */
-  background-color: white; /* Couleur de fond blanche */
-  border-radius: 50%; /* Rend l'arrière-plan circulaire */
-  color: black;      /* Couleur de l'icône en noir */
-  padding: 5px;     /* Espace autour de l'icône */
-  cursor: pointer;  /* Change le curseur au survol */
-  transition: background-color 0.3s; /* Transition douce pour le survol */
+  position: absolute;  
+  left: 5px;         
+  top: 5px;          
+  background-color: white; 
+  border-radius: 50%; 
+  color: black;      
+  padding: 5px;  
+  cursor: pointer;  
+  transition: background-color 0.3s; 
 }
 
 .edit-icon:hover {
-  background-color: rgba(240, 240, 240, 0.8); /* Change légèrement la couleur au survol */
+  background-color: rgba(240, 240, 240, 0.8); 
 }
 
 .modal {
@@ -125,7 +125,7 @@
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+  background-color: rgba(0, 0, 0, 0.5); 
 }
 
 .modal-content {
@@ -133,7 +133,7 @@
   margin: 15% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; /* Largeur de la modale */
+  width: 80%; 
 }
 
 .close {
@@ -149,9 +149,17 @@
   text-decoration: none;
   cursor: pointer;
 }
-
-
-
-
+.edit-form{
+  position: relative;
+  margin: auto;
+  justify-content: center; 
+  align-items: center;
+  flex-direction: column;
+  flex: 1;
+  width: 80%;
+  height: 30%;
+  display: flex;
+  overflow: hidden;
+}
 
 
