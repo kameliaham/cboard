@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -42,14 +42,23 @@ const propTypes = {
    * User birthdate
    */
   birthdate: PropTypes.string.isRequired,
-  onDeleteAccount: PropTypes.func
+  onDeleteAccount: PropTypes.func,
+  profession: PropTypes.string.isRequired,
+  orthophonisteInfo: PropTypes.object,
+  patientsWithSameMatricule: PropTypes.array,
+  matricule: PropTypes.string,
+  fetchData: PropTypes.func
 };
 
 const defaultProps = {
   name: '',
   email: '',
   birthdate: '',
-  location: { country: null, countryCode: null }
+  location: { country: null, countryCode: null },
+  profession: '',
+  matricule: '',
+  orthophonisteInfo: null,
+  patientsWithSameMatricule: []
 };
 
 const People = ({
@@ -60,9 +69,15 @@ const People = ({
   email,
   birthdate,
   location: { country, countryCode },
+  profession,
+  matricule,
   onChangePeople,
   onSubmitPeople,
-  onDeleteAccount
+  onDeleteAccount,
+  orthophonisteInfo,
+  patientsWithSameMatricule,
+  fetchData,
+  onSearchChange
 }) => {
   const [openDeleteConfirmation, setOpenDeleteConfirmation] = useState(false);
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
@@ -84,6 +99,15 @@ const People = ({
       setErrorDeletingAccount(true);
     }
   };
+
+  useEffect(
+    () => {
+      fetchData();
+    },
+    [profession, matricule]
+  );
+
+  console.log('patiennntn', patientsWithSameMatricule);
 
   return (
     <div className="People">
@@ -169,6 +193,46 @@ const People = ({
                 />
               </ListItemSecondaryAction>
             </ListItem>
+            {/* Champ Profession */}
+            <ListItem>
+              <ListItemText
+                primary={<FormattedMessage {...messages.profession} />}
+                secondary={
+                  <FormattedMessage {...messages.professionSecondary} />
+                }
+              />
+              <ListItemSecondaryAction className="Settings--secondaryAction">
+                <TextField
+                  disabled={true}
+                  id="user-profession"
+                  label={<FormattedMessage {...messages.profession} />}
+                  value={profession}
+                />
+              </ListItemSecondaryAction>
+            </ListItem>
+            {/* Champ Matricule */}
+            <ListItem>
+              <ListItemText
+                primary={<FormattedMessage {...messages.matricule} />}
+                secondary={
+                  <FormattedMessage {...messages.matriculeSecondary} />
+                }
+              />
+              <ListItemSecondaryAction className="Settings--secondaryAction">
+                <TextField
+                  disabled={!isLogged || profession === 'orthophoniste'}
+                  id="user-matricule"
+                  label={<FormattedMessage {...messages.matricule} />}
+                  value={matricule}
+                  onChange={onChangePeople('matricule')}
+                  helperText={
+                    profession === 'orthophoniste'
+                      ? 'Le matricule ne peut pas être modifié'
+                      : ''
+                  }
+                />
+              </ListItemSecondaryAction>
+            </ListItem>
             {country && (
               <ListItem>
                 <ListItemText
@@ -215,6 +279,87 @@ const People = ({
             )}
           </List>
         </Paper>
+
+        <Paper style={{ marginTop: '30px' }}>
+          {profession === 'patient' && matricule && (
+            <>
+              {orthophonisteInfo && (
+                <List>
+                  <ListItem>
+                    <ListItemText
+                      primary={`Vous suivez chez l'orthophoniste : ${
+                        orthophonisteInfo.name
+                      }`}
+                      secondary={`Email : ${orthophonisteInfo.email}`}
+                    />
+                  </ListItem>
+                </List>
+              )}
+            </>
+          )}
+          {profession === 'orthophoniste' && (
+            <>
+              {patientsWithSameMatricule.length > 0 && (
+                <List style={{ margin: '50px' }}>
+                  <div
+                    style={{
+                      fontSize: '24px',
+                      marginBottom: '30px',
+                      marginTop: '30px',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Liste des Patients
+                  </div>
+                  <div style={{ position: 'relative', marginBottom: '20px' }}>
+                    <input
+                      type="text"
+                      placeholder="Rechercher par nom, prénom ou email"
+                      onChange={onSearchChange}
+                      style={{
+                        padding: '10px 40px 10px 10px',
+                        width: '100%',
+                        fontSize: '16px'
+                      }}
+                    />
+                    <i
+                      className="fas fa-search"
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        right: '10px',
+                        transform: 'translateY(-50%)',
+                        color: '#aaa',
+                        fontSize: '20px'
+                      }}
+                    />
+                  </div>
+
+                  {patientsWithSameMatricule.map(patient => (
+                    <ListItem
+                      key={patient.id}
+                      style={{
+                        padding: '10px 0',
+                        borderBottom: '1px solid #ccc'
+                      }}
+                    >
+                      <ListItemText
+                        primary={patient.name}
+                        style={{ fontWeight: '600', fontSize: '24px' }}
+                      />
+                      <ListItemText
+                        primary={`Email : ${patient.email}`}
+                        secondary={`Dernière authentification : ${formatDate(
+                          patient.lastlogin
+                        )}`}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </>
+          )}
+        </Paper>
         <DeleteConfirmationDialog
           open={openDeleteConfirmation}
           handleClose={handleCloseDeleteDialog}
@@ -225,6 +370,17 @@ const People = ({
       </FullScreenDialog>
     </div>
   );
+};
+
+const formatDate = dateString => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('fr-FR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
 };
 
 People.propTypes = propTypes;

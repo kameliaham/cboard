@@ -3,8 +3,8 @@
   padding: 1em;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: #eceff1;
+  justify-content: right;
+  align-items: right;
+  color: #1a4663;
   background: linear-gradient(to right, rgb(121, 22, 254), rgb(172, 47, 138));
 }

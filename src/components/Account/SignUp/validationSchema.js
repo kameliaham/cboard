@@ -14,6 +14,7 @@ const validationSchema = yup.object().shape({
     .string()
     .email('Invalid email')
     .required('Required'),
+  profession: yup.string().required('Required'),
   isTermsAccepted: yup
     .bool()
     .oneOf([true], 'Accept Terms and Policy is required')
