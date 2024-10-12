@@ -57,13 +57,17 @@ const Tile = props => {
 
   if (backgroundColor) {
     tileShapeStyles.backgroundColor = backgroundColor;
+    if(folder){tileShapeStyles.backgroundColor = "rgb(51, 199, 255)";}else{
+      tileShapeStyles.backgroundColor = "rgb(255, 209, 102)";}
   }
 
   const onSelect = (event, scannable, scanner) => {
-    if (folder) {
+if (scanner){
+      if (folder) {
       scanner.reset();
     }
   };
+}
 
   return (
     <Scannable onSelect={onSelect} id={'scannable'}>

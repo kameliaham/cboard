@@ -82,8 +82,8 @@ export class TileEditor extends Component {
     super(props);
 
     this.defaultTileColors = {
-      folder: '#bbdefb',
-      button: '#fff176',
+      folder: '#33C7FF',
+      button: '#FFD166',
       board: '#999999'
     };
 

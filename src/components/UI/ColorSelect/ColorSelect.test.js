@@ -18,6 +18,7 @@ jest.mock('./ColorSelect.messages', () => {
     }
   };
 });
+// eslint-disable-next-line import/first
 import ColorSelect from './ColorSelect';
 const intl = { formatMessage: () => 'dummy translation' };
 const COLORS = ['#CE93D8', '#2196F3', '#4CAF50', '#E57373'];

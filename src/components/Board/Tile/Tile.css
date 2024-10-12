@@ -1,7 +1,7 @@
 .Tile {
   height: 100%;
   width: 100%;
-  padding: 10px 5px 0 5px;
+  padding: 10px 10px 0 5px;
   border: none;
   background: none;
   cursor: pointer;
@@ -45,7 +45,8 @@
 
 .TileShape::before,
 .TileShape--folder::after {
-  background: inherit;
+ /* background: white;*/
+  background-color: inherit;
   border: 3px solid transparent;
   z-index: -1;
 }
@@ -88,6 +89,6 @@
 
 .Tile:not(:focus):hover .TileShape::before,
 .Tile:not(:focus):hover .TileShape--folder::after {
-  border-color: rgba(0, 0, 0, 0.5);
+  border-color: rgba(69, 35, 220, 0.5);
   transition: none;
 }
