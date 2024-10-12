@@ -147,7 +147,7 @@ function EditToolbar({
                   checked={isFixed}
                   onChange={onBoardTypeChange}
                   name="switchFixedBoard"
-                  color="secondary"
+                  color="primary"
                 />
               }
               label={intl.formatMessage(messages.fixedBoard)}

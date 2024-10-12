@@ -57,7 +57,7 @@
   height: 100%;
   z-index: 4;
   flex: 1;
-  background: #fff;
+  background: none;
   direction: ltr; /* for grid */
   overflow-x: hidden;
   overflow-y: scroll;

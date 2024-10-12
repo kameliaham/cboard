@@ -15,14 +15,14 @@ import messages from './ColorSelect.messages';
 const colorSchemes = [
   {
     name: 'Cboard',
-    colors: ['#bbdefb', '#fff176', '#CE93D8', '#2196F3', '#4CAF50', '#E57373']
+    colors: ['#33C7FF', '#FFD166', '#CE93D8', '#2196F3', '#4CAF50', '#E57373']
   },
   {
     name: 'Fitzgerald',
     colors: [
       '#2196F3',
       '#4CAF50',
-      '#fff176',
+      '#FFD166',
       '#ff6600',
       '#ffffff',
       '#ffc0cb',
@@ -34,7 +34,7 @@ const colorSchemes = [
   },
   {
     name: 'Goossens',
-    colors: ['#ffc0cb', '#2196F3', '#4CAF50', '#fff176', '#ff6600']
+    colors: ['#ffc0cb', '#2196F3', '#4CAF50', '#FFD166', '#ff6600']
   }
 ];
 
